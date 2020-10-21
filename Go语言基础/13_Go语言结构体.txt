@@ -1,0 +1,165 @@
+Go语言结构体
+    Go语言中数组可以存储同一类型的数据，但在结构体中我们可以为不同项定义不同的数据类型。
+    结构体是由一系列具有相同类型或不同类型的数据构成的数据集合。
+    结构体表示一项记录，比如保存图书馆的书籍记录，每本书有以下属性：
+        Title   标题
+        Author  坐着
+        Subject 科学
+        ID      书籍ID
+1. 定义结构体
+    结构体定义需要使用type和struct语句。struct语句定义一个新的数据类型，结构体中有一个或多个成员。type语句设定了结构体的名称。结构体的格式如下：
+    type struct_variable_type struct {
+        member definition
+        member definition
+        ...
+        member definition
+    }
+    一旦定义了结构体类型，它就能用于变量的声明，语法格式如下：
+    variable_name := structure_variable_type {value1, value2, value3, ..., valuen}
+    或者
+    variable_name := struct_variable_type {key1:value1, key2:value2, ..., keyn:valuen}
+    实例：
+    package main
+    import "fmt"
+    type Books struct {
+        title string
+        author string
+        subject string
+        book_id int
+    }
+    func main () {
+        //创建一个新的结构体
+        fmt.Println(Books{"Go 语言", "www.runoob.com", "Go 语言教程", 65747435})
+        //也可以使用key - value的格式
+        fmt.Println(Books{title:"Go 语言", author:"www.runoob.com", subject:"Go 语言教程", book_id:6435654})
+        //忽略字段为0或空
+        fmt.Println(Books{title:"Go 语言", author:"www.runoob.com"})
+    }
+2. 访问结构体
+    如果要访问结构体成员，需要使用点号 . 操作符，格式为：
+        结构体.成员名
+    实例：
+    package main
+    import "fmt"
+    type Books struct {
+        title string
+        author string
+        subject string
+        book_id int
+    }
+    func main () {
+        var Book1 Book//声明Book1为Book类型
+        var Book2 Book//声明Book2为Book类型
+
+        //Book1描述
+        Book1.title = "Go 语言"
+        Book1.author = "www"
+        Book1.subject = "Go"
+        Book1.book_id = 12345
+
+        //Book2描述
+        Book2.title = "Go 语言"
+        Book2.author = "www"
+        Book2.subject = "Go"
+        Book2.book_id = 12345
+
+        //打印Book1信息
+        fmt.Println("Book 1 title : %s\n", Book1.title)
+        fmt.Println("Book 1 author : %s\n", Book1.author)
+        fmt.Println("Book 1 subject : %s\n", Book1.subject)
+        fmt.Println("Book 1 book_id : %s\n", Book1.book_id)
+
+        //打印Book2信息
+        fmt.Println("Book 2 title : %s\n", Book2.title)
+        fmt.Println("Book 2 author : %s\n", Book2.author)
+        fmt.Println("Book 2 subject : %s\n", Book2.subject)
+        fmt.Println("Book 2 book_id : %s\n", Book2.book_id)
+    }
+3. 结构体作为函数参数
+    我们可以像其他数据类型一样将结构体类型作为参数传递给函数。并以以上实例的方式访问结构体变量：
+    package main
+    import "fmt"
+    type Booksss struct {
+        title string
+        author string
+        subject string
+        book_id int
+    }
+    func main () {
+        var Book1 Booksss//声明Book1为Booksss类型
+        var Book2 Booksss//声明Book2为Booksss类型
+        //Book1描述
+        Book1.title = "1"
+        Book1.author = "2"
+        Book1.subject = "3"
+        Book1.book_id = 4
+        //Book2描述
+        Book2.title = "5"
+        Book2.author = "6"
+        Book2.subject = "7"
+        Book2.book_id = 8
+
+        printBook(Book1)
+        printBook(Book2)
+    }
+    func printBook (book Booksss) {
+        fmt.Printf("Booksss title : %s\n", book.title)
+        fmt.Printf("Booksss author : %s\n", book.author)
+        fmt.Printf("Booksss subject : %s\n", book.subject)
+        fmt.Printf("Booksss book_id : %s\n", book.book_id)
+    }
+4. 结构体指针
+    我们可以定义指向结构体的指针类似于其他指针变量，格式如下：
+        var struct_pointer *Books
+    以上定义的指针变量可以存储结构体变量的地址。查看结构体变量地址，可以将 & 符号放置于结构体变量前：
+        struct_pointer = &Book1
+    使用结构体指针访问结构体成员，使用 "." 操作符：
+        struct_pointer.title
+    接下来我们使用结构体指针，来重写以上实例，代码如下：
+    package main
+    import "fmt"
+    type Booked struct {
+        title string
+        author string
+        subject string
+        book_id int
+    }
+    func printBooked (book *Booked) {
+        fmt.Printf("*Booked title : %s\n", book.title)
+        fmt.Printf("*Booked author : %s\n", book.author)
+        fmt.Printf("*Booked subject : %s\n", book.subject)
+        fmt.Printf("*Booked book_id : %d\n", book.book_id)
+    }
+    func main () {
+        var Book1 Booked
+        var Book2 Booked
+
+        Book1.title = "1"
+        Book1.author = "2"
+        Book1.subject = "3"
+        Book1.book_id = 4
+
+        Book2.title = "5"
+        Book2.author = "6"
+        Book2.subject = "7"
+        Book2.book_id = 8
+
+        printBooked(&Book1)
+        printBooked(&Book2)
+    }
+注意：
+    1. 如果想要改变结构体内的数据内容，则需要传递指针，才可以修改，，，直接传结构体，是不可以修改的
+    2. struct类似于Java中的类，可以在struct中定义成员变量，要访问成员变量，可以有两种方式：
+        a. struct变量.成员
+        b. struct指针.成员
+        在Go语言中不需要getter或者setter来设置访问权限了。。。
+    3. 结构体中变量大小写问题：
+        a. 首字母大写，相当于public
+        b. 首字母小写，相当于private
+        注意，这个public和private是相对于包来说的(Go文件首行的package后面跟的是包名)
+    4. 如果想要输出结构体中的变量，并且首字母还是小写，那么就需要用到tag标记了，如下：
+        type Book struct {
+            Title string    `json:"name"`    //标记json名字为name
+            Age string      `json:"age"`     //标记json名字为name
+            Time int64      `json:"-"`       //标记忽略该字段
+        }
