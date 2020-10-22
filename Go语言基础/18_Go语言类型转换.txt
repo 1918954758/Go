@@ -1,0 +1,26 @@
+Go语言类型转换
+    类型转换用于将一种数据类型的变量转换为另一种类型的变量。Go语言类型转换基本格式如下：
+    type_name(expression)
+    type_name为类型
+    expression为表达式
+    实例：
+        package main
+        import "fmt"
+        func main() {
+            var sum int = 17
+            var count int = 5
+            var mean float32
+
+            mean = float32(sum) / float32(count)
+            fmt.Printf("mean 的值为：%f\n", mean)
+        }
+    Go语言不支持隐式的类型转换，如：
+        package main
+        import "fmt"
+        func main() {
+            var a int64 = 3
+            var b int32
+            b = a           //类型隐式转换会报错
+            b = int32(a)    //这样就不会报错，并且可以执行了
+            fmt.Pritf("b为： %d\n", b)
+        }
