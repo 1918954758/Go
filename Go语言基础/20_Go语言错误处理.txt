@@ -1,0 +1,133 @@
+Go语言错误处理
+    Go语言通过内置的错误接口提供了非常简单的错误处理机制。
+    error类型是一个接口类型，定义如下：
+    type error interface {
+        Error() string
+    }
+    我们可以在编码中通过实现error接口类型来生成错误信息。
+    函数通常在最后的返回值中返回错误信息。使用errors.New可返回一个错误信息：
+    func Sqrt(f float64) (float64, error) {
+        if f < 0 {
+            return 0, errors.New("math: square root of negative number")
+        }
+        //实现
+    }
+
+    在下面的例子中，我们在调用Sqrt的时候传递的一个负数，然后就得到了non-nil的error对象，将此对象与nil比较，结果为true，所以fmt.Println(fmt包在处理error时会调用Error方法)被调用，以输出错误，请看下面调用的示例代码：
+    result, err := Sqrt(-1)
+    if err != nil {
+        fmt.Println(err)
+    }
+    实例：
+    package main
+    import "fmt"
+    //定义一个DivideError结构体
+    type DivideError struct {
+        dividee int
+        divider int
+    }
+    //实现`error`接口
+    func (de *DivideError) Error() string {
+        strFormat := `Cannot proceed, the divider is zero.
+            dividee: %d
+            divider: 0`
+        return fmt.Sprintf(strFormat, de.dividee)
+    }
+    //定义`int`类型除法运算的函数
+    func Divide(varDividee int, varDivider int) (return int, errorMsg string) {
+        if varDivider == 0 {
+            dData := DivideError{
+                dividee: varDividee,
+                divider: varDivider,
+            }
+            errorMsg = dData.Error()
+            return
+        } else {
+            return varDividee / varDivider, ""
+        }
+    }
+    func main() {
+        //正常情况
+        if result, errorMsg := Divide(100, 10); errorMsg == "" {
+            fmt.Println("100/10 = ", result)
+        }
+        //异常情况
+        if result, errorMsg := Divide(100, 0); errorMsg != "" {
+            fmt.Println("100/0 = ", result, errorMsg)
+        }
+    }
+
+1. panic和recover
+    panic和recover是两个错误处理的内置函数。
+    panic是主动抛出错误，recover是用于捕获panic抛出的错误
+    概念：
+        panic和recover是Go语言的两个内置函数，这两个内置函数用于处理Go语言运行时的错粗，panic用于主动抛出错误，recover用来捕获panic抛出的错误。
+    a. 引发panic有两种情况，一是程序主动调用，二是程序产生运行时错误，由运行时检测并退出。
+    b. 引发panic后，程序会从调用panic的函数位置或发生panic的地方立即返回，逐层向上执行函数的defer语句，然后逐层打印函数调用堆栈，知道被recover捕获或运行到最外层函数
+    c. panic不但可以在函数正常流程中抛出，在defer逻辑里也可以在次调用panic或抛出panic。defer里面的panic能够被后续执行的defer捕获。
+    d. recover用来捕获panic，阻止panic继续向上传递。recover()和defer一起使用，但是defer只有在后面的函数体内直接被调用才能捕获panic来终止异常，否则返回nil，异常继续向外传递。
+    例子：
+    //以下捕获失败
+    defer recover()
+    defer fmt.Println(recover)
+    defer func() {
+        func () {
+            recover()//无效异常捕获，嵌套两层
+        }
+    }
+    //有效捕获以下异常
+    func func() {
+        recover()
+    }
+    func except() {
+        recover()
+    }
+    func test() {
+        defer except()
+        panic("runtion error")
+    }
+    注意： 多个panic，只能捕获最后一个。
+
+    异常简单例子：
+    package main
+    import "fmt"
+    //自定义结构体
+    type DIV_ERR struct {
+        etype int   //错误类型
+        v1 int      //记录下出错时的除数、被除数
+        v2 int
+    }
+    //实现接口方法 error.Error()
+    func (div_err DIV_ERR) Error() string {
+        if div_error.etype == 0 {
+            return "除零错误"
+        } else {
+            return "其他未知错误"
+        }
+    }
+    //除法
+    func div(a int, b int) (int, *DIV_ERR) {
+        if b == 0 {
+            //返回错误信息
+            return 0, &DIV_ERR{0, a, b}
+        } else {
+            //返回正确信息
+            return a/b, nil
+        }
+    }
+    func main() {
+        //正确调用
+        v, r := div(100, 10)
+        if r != nil {
+            fmt.Println("(1)Fail: ", r)
+        } else {
+            fmt.Println("(1)Succeed: ", v)
+        }
+        //错误调用
+        v, r := div(100, 0)
+        if r == nil {
+            fmt.Println("(2)Fail: ", r)
+        } else {
+            fmt.Println("(2)Succeed: ", v)
+        }
+    }
